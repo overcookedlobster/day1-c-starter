@@ -18,7 +18,7 @@
  */
 int is_valid_voltage(float voltage) {
     // TODO: Implement voltage validation logic
-    return 0;  // Placeholder
+    return -1;  // Placeholder to fail all tests
 }
 
 #ifndef UNIT_TEST
