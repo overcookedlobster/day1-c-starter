@@ -11,7 +11,8 @@
 #include <stdio.h>
 
 int main(void) {
-    // TODO: Add your printf statements here
+    printf("Welcome to Post-Silicon Validation using C!\n");
+    printf("This program demonstrates basic C programming for hardware testing.\n");
 
     return 0;
 }

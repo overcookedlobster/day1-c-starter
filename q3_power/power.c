@@ -9,18 +9,57 @@
  */
 
 #include <stdio.h>
+#include "power.h"
 
+/**
+ * Calculates power consumption: P = V * I
+ * @param voltage Voltage in volts
+ * @param current Current in amps
+ * @return Calculated power in watts
+ */
+float calculate_power(float voltage, float current) {
+    return voltage * current;
+}
+
+/**
+ * Checks if power is within safe limit (5.0W)
+ * @param power Power in watts
+ * @return 1 if valid (<=5.0W), 0 if invalid
+ */
+int is_valid_power(float power) {
+    return (power <= 5.0f) ? 1 : 0;
+}
+
+#ifndef UNIT_TEST
 int main(void) {
     float voltage, current, power;
     float max_power = 5.0f;
 
-    printf("Power Calculator for Chip Validation\
-");
-    printf("Maximum allowed power: %.1fW\
-", max_power);
+    printf("Power Calculator for Chip Validation\n");
+    printf("Maximum allowed power: %.1fW\n", max_power);
 
-    // TODO: Read voltage and current, calculate power, and validate
+    // Read voltage and current, calculate power, and validate
+    printf("Enter voltage (V): ");
+    if (scanf("%f", &voltage) != 1) {
+        printf("Invalid voltage input.\n");
+        return 1;
+    }
+    printf("Enter current (A): ");
+    if (scanf("%f", &current) != 1) {
+        printf("Invalid current input.\n");
+        return 1;
+    }
+
+    power = calculate_power(voltage, current);
+    printf("Calculated power: %.3fW\n", power);
+
+    if (is_valid_power(power)) {
+        printf("Power %.3fW is VALID.\n", power);
+    } else {
+        printf("Power %.3fW is INVALID (exceeds %.1fW limit).\n", power, max_power);
+    }
 
     return 0;
 }
+#endif
 
