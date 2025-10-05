@@ -1,0 +1,125 @@
+name: github classroom workflow
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  autograding:
+    name: autograding
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc make libc6-dev
+
+      - name: compilation test
+        id: compilation
+        run: |
+          make clean
+          if make all 2>&1; then
+            echo "compilation successful"
+            echo "compilation_passed=true" >> $GITHUB_OUTPUT
+          else
+            echo "compilation failed - this is expected for starter template"
+            echo "compilation_passed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: run voltage tests
+        id: voltage-tests
+        run: |
+          if [ -f "./tests/test_voltage" ]; then
+            ./tests/test_voltage > voltage_results.txt 2>&1 || true
+            cat voltage_results.txt
+            passed=$(grep "passed:" voltage_results.txt | awk '{print $2}' || echo "0")
+            total=$(grep "total tests:" voltage_results.txt | awk '{print $3}' || echo "6")
+          else
+            echo "test executable not found - compilation may have failed"
+            passed=0
+            total=6
+          fi
+
+          echo "voltage_passed=$passed" >> $GITHUB_OUTPUT
+          echo "voltage_total=$total" >> $GITHUB_OUTPUT
+          echo "voltage tests: $passed/$total passed"
+
+      - name: run power tests
+        id: power-tests
+        run: |
+          if [ -f "./tests/test_power" ]; then
+            ./tests/test_power > power_results.txt 2>&1 || true
+            cat power_results.txt
+            passed=$(grep "passed:" power_results.txt | awk '{print $2}' || echo "0")
+            total=$(grep "total tests:" power_results.txt | awk '{print $3}' || echo "6")
+          else
+            echo "test executable not found - compilation may have failed"
+            passed=0
+            total=6
+          fi
+
+          echo "power_passed=$passed" >> $GITHUB_OUTPUT
+          echo "power_total=$total" >> $GITHUB_OUTPUT
+          echo "power tests: $passed/$total passed"
+
+      - name: calculate scores
+        run: |
+          # compilation score (20 points)
+          if [ "${{ steps.compilation.outputs.compilation_passed }}" = "true" ]; then
+            compilation_score=20
+          else
+            compilation_score=0
+          fi
+
+          # voltage tests score (40 points)
+          voltage_passed=${{ steps.voltage-tests.outputs.voltage_passed }}
+          voltage_total=${{ steps.voltage-tests.outputs.voltage_total }}
+          if [ "$voltage_total" -eq 0 ]; then
+            voltage_score=0
+          else
+            voltage_score=$((voltage_passed * 40 / voltage_total))
+          fi
+
+          # power tests score (40 points)
+          power_passed=${{ steps.power-tests.outputs.power_passed }}
+          power_total=${{ steps.power-tests.outputs.power_total }}
+          if [ "$power_total" -eq 0 ]; then
+            power_score=0
+          else
+            power_score=$((power_passed * 40 / power_total))
+          fi
+
+          total_score=$((compilation_score + voltage_score + power_score))
+
+          echo "## autograding results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| test category | score | max points |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------------|-------|------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| compilation | $compilation_score | 20 |" >> $GITHUB_STEP_SUMMARY
+          echo "| voltage tests | $voltage_score | 40 |" >> $GITHUB_STEP_SUMMARY
+          echo "| power tests | $power_score | 40 |" >> $GITHUB_STEP_SUMMARY
+          echo "| **total** | **$total_score** | **100** |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### test details:" >> $GITHUB_STEP_SUMMARY
+          echo "- voltage validation: $voltage_passed/$voltage_total tests passed" >> $GITHUB_STEP_SUMMARY
+          echo "- power calculation: $power_passed/$power_total tests passed" >> $GITHUB_STEP_SUMMARY
+
+      - name: autograding reporter
+        uses: education/autograding@v1
+        env:
+          compilation_results: "${{ steps.compilation.outputs.compilation_passed }}"
+          voltage_results: "${{ steps.voltage-tests.outputs.voltage_passed }}/${{ steps.voltage-tests.outputs.voltage_total }}"
+          power_results: "${{ steps.power-tests.outputs.power_passed }}/${{ steps.power-tests.outputs.power_total }}"
+
