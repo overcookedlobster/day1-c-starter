@@ -33,7 +33,7 @@ jobs:
         command: make clean && make all
         input: ''
         expected-output: '✓ all day 1 programs compiled successfully!'
-        comparison-method: substring
+        comparison-method: Included
         timeout: 10
         max-score: 33
 
@@ -46,7 +46,7 @@ jobs:
         command: ./tests/test_voltage
         input: ''
         expected-output: '✓ all tests passed!'
-        comparison-method: substring
+        comparison-method: Included
         timeout: 10
         max-score: 33
 
@@ -59,7 +59,7 @@ jobs:
         command: ./tests/test_power
         input: ''
         expected-output: '✓ all tests passed!'
-        comparison-method: included
+        comparison-method: Included
         timeout: 10
         max-score: 34
 
