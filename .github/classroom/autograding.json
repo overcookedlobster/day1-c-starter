@@ -1,34 +1,34 @@
 {
   "tests": [
     {
-      "name": "compilation check",
+      "name": "Test 1: Compilation Check",
       "setup": "sudo apt-get update && sudo apt-get install -y gcc make libc6-dev",
       "run": "make clean && make all",
       "input": "",
       "output": "✓ all day 1 programs compiled successfully!",
       "comparison": "included",
       "timeout": 10,
-      "points": 20
+      "points": 33
     },
     {
-      "name": "voltage validation tests",
+      "name": "Test 2: Voltage Validation",
       "setup": "make clean && make all",
       "run": "./tests/test_voltage",
       "input": "",
       "output": "✓ all tests passed!",
       "comparison": "included",
       "timeout": 10,
-      "points": 40
+      "points": 33
     },
     {
-      "name": "power calculation tests",
+      "name": "Test 3: Power Calculation",
       "setup": "make clean && make all",
       "run": "./tests/test_power",
       "input": "",
       "output": "✓ all tests passed!",
       "comparison": "included",
       "timeout": 10,
-      "points": 40
+      "points": 34
     }
   ]
 }
