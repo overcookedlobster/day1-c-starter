@@ -85,7 +85,6 @@ install_manifest.txt
 compile_commands.json
 CMakeDoxyfile.in
 CMakeDoxyfile
-Makefile
 *.cmake
 
 # Dependencies
