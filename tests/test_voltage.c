@@ -18,6 +18,10 @@ int main() {
     printf("passed: %d\n", passed);
     printf("total tests: %d\n", total);
 
+    if (passed == total) {
+        printf("✓ all tests passed!\n");
+    }
+
     return (passed == total) ? 0 : 1;
 }
 
