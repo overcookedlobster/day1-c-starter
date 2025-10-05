@@ -1,10 +1,8 @@
 name: Autograding Tests
 
 on:
-
   - push
   - repository_dispatch
-
 
 permissions:
   checks: write
@@ -25,7 +23,7 @@ jobs:
         sudo apt-get install -y gcc make libc6-dev
 
     - name: Test 1 - Compilation Check
-      id: test-compilation
+      id: test-1
       uses: classroom-resources/autograding-io-grader@v1
       with:
         test-name: Test 1 - Compilation Check
@@ -33,42 +31,42 @@ jobs:
         command: make clean && make all
         input: ''
         expected-output: '✓ all day 1 programs compiled successfully!'
-        comparison-method: included
+        comparison-method: contains
         timeout: 10
         max-score: 33
 
     - name: Test 2 - Voltage Validation
-      id: test-voltage
+      id: test-2
       uses: classroom-resources/autograding-io-grader@v1
       with:
         test-name: Test 2 - Voltage Validation
-        setup-command: 'sudo apt-get update && sudo apt-get install -y gcc make libc6-dev && make clean && make all'
+        setup-command: 'make clean && make all'
         command: ./tests/test_voltage
         input: ''
         expected-output: '✓ all tests passed!'
-        comparison-method: included
+        comparison-method: contains
         timeout: 10
         max-score: 33
 
     - name: Test 3 - Power Calculation
-      id: test-power
+      id: test-3
       uses: classroom-resources/autograding-io-grader@v1
       with:
         test-name: Test 3 - Power Calculation
-        setup-command: 'sudo apt-get update && sudo apt-get install -y gcc make libc6-dev && make clean && make all'
+        setup-command: 'make clean && make all'
         command: ./tests/test_power
         input: ''
         expected-output: '✓ all tests passed!'
-        comparison-method: included
+        comparison-method: contains
         timeout: 10
         max-score: 34
 
     - name: Autograding Reporter
       uses: classroom-resources/autograding-grading-reporter@v1
       env:
-        TEST-COMPILATION_RESULTS: "${{steps.test-compilation.outputs.result}}"
-        TEST-VOLTAGE_RESULTS: "${{steps.test-voltage.outputs.result}}"
-        TEST-POWER_RESULTS: "${{steps.test-power.outputs.result}}"
+        TEST-1_RESULTS: "${{steps.test-1.outputs.result}}"
+        TEST-2_RESULTS: "${{steps.test-2.outputs.result}}"
+        TEST-3_RESULTS: "${{steps.test-3.outputs.result}}"
       with:
-        runners: test-compilation,test-voltage,test-power
+        runners: test-1,test-2,test-3
 
