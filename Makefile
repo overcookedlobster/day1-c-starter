@@ -6,6 +6,7 @@ TARGETS = q1_hello/hello q2_voltage/voltage q3_power/power
 TESTS = tests/test_voltage tests/test_power
 
 all: $(TARGETS) $(TESTS)
+	@echo "✓ all day 1 programs compiled successfully!"
 
 q1_hello/hello: q1_hello/hello.c
 	$(CC) $(CFLAGS) -o $@ $<
